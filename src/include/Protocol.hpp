@@ -1,9 +1,8 @@
-// Protocol.hpp - message format
 #pragma once
 #include <string>
 #include <vector>
 #include <unordered_map>
-struct Message {
+struct Response {
     enum class Type {
         SET_FIELDS,
         GETALL,
@@ -25,11 +24,25 @@ struct Message {
     int clientSocket;
 };
 
+struct Request {
+    enum class Type {
+        SET_FIELDS,
+        GETALL,
+        GET_FIELDS,
+        INVALID
+    };
+    Type type;
+    std::string key;
+    std::unordered_map<std::string, std::string> fields;
+    std::vector<std::string> fieldNames;  // for GET_SELECTED_FIELDS
+    int clientSocket;
+};
+
 class Protocol {
 public:
-    static int serializeAndSend(Message& msg);
-    static Message deserialize(const std::string& data);
+    static int serializeAndSend(Response& msg);
+    static Request deserialize(const std::string& data);
 private:
-    static const char FIELD_SEP = '\t';
-    static const char KV_SEP = '=';
+    static const char FIELD_SEP;
+    static const char KV_SEP;
 };

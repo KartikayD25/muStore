@@ -2,35 +2,45 @@
 #include <sstream>
 #include <sys/socket.h>
 #include <cstring>
-int Protocol::serializeAndSend(Message& msg) {
-    if(msg.sendMethod == Message::SendMethod::TWOCOPY) {
+#include "Logger.hpp"
+const char Protocol::FIELD_SEP = ' ';
+const char Protocol::KV_SEP = '=';
+int Protocol::serializeAndSend(Response& msg) {
+    LOG_INFO("Serializing and sending message " + std::to_string(static_cast<int>(msg.type)));
+    if(msg.sendMethod == Response::SendMethod::TWOCOPY) {
+        LOG_INFO("Using two-copy method");
         std::ostringstream oss;
     oss << static_cast<int>(msg.type) << FIELD_SEP
         << msg.key << FIELD_SEP;
 
-    if (msg.type == Message::Type::SET_FIELDS || 
-        msg.type == Message::Type::RESPONSE) {
+    if (msg.type == Response::Type::SET_FIELDS || 
+        msg.type == Response::Type::RESPONSE) {
         oss << msg.fields.size() << FIELD_SEP;
         for (const auto& field : msg.fields) {
             oss << field.first << FIELD_SEP;
     }
         }
-    else if (msg.type == Message::Type::GET_FIELDS) {
+    else if (msg.type == Response::Type::GET_FIELDS) {
         oss << msg.fieldNames.size() << FIELD_SEP;
         for (auto field : msg.fieldNames) {
             oss << field << KV_SEP << *(msg.fields[field]) << FIELD_SEP;
         }
     }
-    else if (msg.type == Message::Type::GETALL) {
+    else if (msg.type == Response::Type::GETALL) {
         oss << msg.fields.size() << FIELD_SEP;
         for (const auto& field : msg.fields) {
             oss << field.first << KV_SEP << *(field.second) << FIELD_SEP;
         }
     }
+        LOG_INFO("Sending message: " + oss.str());
         int result = send(msg.clientSocket, oss.str().c_str(), oss.str().size(), 0);
+        if (result == -1) {
+            LOG_ERROR("Error sending message");
+        }
         return result;
     }
-    else if(msg.sendMethod == Message::SendMethod::ONECOPY) {
+    else if(msg.sendMethod == Response::SendMethod::ONECOPY) {
+        LOG_INFO("Using one-copy method");
         std::vector<iovec> iovecs;
         iovecs.reserve(100);
         iovec iovType;
@@ -50,8 +60,8 @@ int Protocol::serializeAndSend(Message& msg) {
         iovKVSep.iov_base = const_cast<char*>(&KV_SEP);
         iovKVSep.iov_len = 1;
 
-        if (msg.type == Message::Type::SET_FIELDS || 
-            msg.type == Message::Type::RESPONSE) {
+        if (msg.type == Response::Type::SET_FIELDS || 
+            msg.type == Response::Type::RESPONSE) {
 
                 iovec iovFieldCount;
                 iovFieldCount.iov_base = const_cast<char*>(std::to_string(msg.fields.size()).c_str());
@@ -66,7 +76,7 @@ int Protocol::serializeAndSend(Message& msg) {
                 iovecs.push_back(iovFieldSep);
             }
         }
-        else if (msg.type == Message::Type::GET_FIELDS) {
+        else if (msg.type == Response::Type::GET_FIELDS) {
             iovec iovFieldCount;
             iovFieldCount.iov_base = const_cast<char*>(std::to_string(msg.fieldNames.size()).c_str());
             iovFieldCount.iov_len = std::to_string(msg.fieldNames.size()).size();
@@ -84,7 +94,7 @@ int Protocol::serializeAndSend(Message& msg) {
                 iovecs.push_back(iovFieldSep);
             }
         }
-        else if (msg.type == Message::Type::GETALL) {
+        else if (msg.type == Response::Type::GETALL) {
             iovec iovFieldCount;
             iovFieldCount.iov_base = const_cast<char*>(std::to_string(msg.fields.size()).c_str());
             iovFieldCount.iov_len = std::to_string(msg.fields.size()).size();
@@ -108,7 +118,8 @@ int Protocol::serializeAndSend(Message& msg) {
         int result = sendmsg(msg.clientSocket, &message, 0);
         return result;
     }
-    else if(msg.sendMethod == Message::SendMethod::ONECOPY) {
+    else if(msg.sendMethod == Response::SendMethod::ZEROCOPY) {
+        LOG_INFO("Using zero-copy method");
         std::vector<iovec> iovecs;
         iovecs.reserve(100);
         iovec iovType;
@@ -128,8 +139,8 @@ int Protocol::serializeAndSend(Message& msg) {
         iovKVSep.iov_base = const_cast<char*>(&KV_SEP);
         iovKVSep.iov_len = 1;
 
-        if (msg.type == Message::Type::SET_FIELDS || 
-            msg.type == Message::Type::RESPONSE) {
+        if (msg.type == Response::Type::SET_FIELDS || 
+            msg.type == Response::Type::RESPONSE) {
 
                 iovec iovFieldCount;
                 iovFieldCount.iov_base = const_cast<char*>(std::to_string(msg.fields.size()).c_str());
@@ -144,7 +155,7 @@ int Protocol::serializeAndSend(Message& msg) {
                 iovecs.push_back(iovFieldSep);
             }
         }
-        else if (msg.type == Message::Type::GET_FIELDS) {
+        else if (msg.type == Response::Type::GET_FIELDS) {
             iovec iovFieldCount;
             iovFieldCount.iov_base = const_cast<char*>(std::to_string(msg.fieldNames.size()).c_str());
             iovFieldCount.iov_len = std::to_string(msg.fieldNames.size()).size();
@@ -162,7 +173,7 @@ int Protocol::serializeAndSend(Message& msg) {
                 iovecs.push_back(iovFieldSep);
             }
         }
-        else if (msg.type == Message::Type::GETALL) {
+        else if (msg.type == Response::Type::GETALL) {
             iovec iovFieldCount;
             iovFieldCount.iov_base = const_cast<char*>(std::to_string(msg.fields.size()).c_str());
             iovFieldCount.iov_len = std::to_string(msg.fields.size()).size();
@@ -186,42 +197,48 @@ int Protocol::serializeAndSend(Message& msg) {
         int result = sendmsg(msg.clientSocket, &message, 0);
         return result;
     }
+    return -1;
 }
 
-Message Protocol::deserialize(const std::string& data) {
-    Message msg;
+Request Protocol::deserialize(const std::string& data) {
+    Request msg;
     std::istringstream iss(data);
-    std::string token;
-    int type;
-
-    std::getline(iss, token, FIELD_SEP);
-    type = std::stoi(token);
-    msg.type = static_cast<Message::Type>(type);
-
-    std::getline(iss, msg.key, FIELD_SEP);
-
-    if (msg.type == Message::Type::SET_FIELDS || 
-        msg.type == Message::Type::RESPONSE) {
-        std::getline(iss, token, FIELD_SEP);
-        int fieldCount = std::stoi(token);
-        
-        for (int i = 0; i < fieldCount; i++) {
-            std::string field, value;
-            std::getline(iss, field, KV_SEP);
-            std::getline(iss, value, FIELD_SEP);
+    std::string command;    
+    iss >> command;
+    if (command == "SET_FIELDS") {
+        msg.type = Request::Type::SET_FIELDS;
+        iss >> msg.key;        
+        std::string pair;
+        while (iss >> pair) {
+            size_t pos = pair.find(KV_SEP);
+            if (pos == std::string::npos) continue;
+            
+            std::string field = pair.substr(0, pos);
+            // Remove quotes if present
+            std::string value = pair.substr(pos + 1);
+            if (value.front() == '"' && value.back() == '"') {
+                value = value.substr(1, value.length() - 2);
+            }
+            
             msg.fields[field] = value;
-        }
-    }
-    else if (msg.type == Message::Type::GET_SELECTED_FIELDS) {
-        std::getline(iss, token, FIELD_SEP);
-        int fieldCount = std::stoi(token);
-        
-        for (int i = 0; i < fieldCount; i++) {
-            std::string field;
-            std::getline(iss, field, FIELD_SEP);
             msg.fieldNames.push_back(field);
         }
     }
-
+    else if (command == "GETALL") {
+        msg.type = Request::Type::GETALL;
+        iss >> msg.key;
+    }
+    else if (command == "GET_FIELDS") {
+        msg.type = Request::Type::GET_FIELDS;
+        iss >> msg.key;        
+        std::string field;
+        while (iss >> field) {
+            msg.fieldNames.push_back(field);
+        }
+    }
+    else {
+        msg.type = Request::Type::INVALID;
+    }
+    
     return msg;
 }
