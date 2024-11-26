@@ -1,2 +1,5 @@
-.vscode
+.vscode/
 build/
+mustore.log
+.vscode/settings.json
+.vscode/settings.json

@@ -8,7 +8,7 @@
 #include <cstring>
 #include "Logger.hpp"
 Server::Server(int port) : port(port) {
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    serverSocket = Protocol::createSocket(port);
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_port = htons(port);
@@ -68,12 +68,7 @@ void Server::processCommand(const std::string& command, int clientSocket) {
     LOG_INFO("Processing command: " + command);
     Request msg = Protocol::deserialize(command);
     LOG_INFO("Deserialized message" + std::to_string(static_cast<int>(msg.type)));
-
     Response response;
-
-    //Available send methods are TWOCOPY, ONECOPY, ZEROCOPY, MuSer(not implemented)
-    response.sendMethod = Response::SendMethod::TWOCOPY; // Modify this line to use different send methods 
-
     response.clientSocket = clientSocket;
     if(msg.type == Request::Type::INVALID) {
         response.type = Response::Type::RESPONSE;
@@ -100,12 +95,30 @@ void Server::processCommand(const std::string& command, int clientSocket) {
         case Request::Type::GETALL: {
             response.type = Response::Type::GETALL;
             response.fields = store.getFields(msg.key);
+            // check the size of the fields
+            for (const auto& [field, value] : response.fields) {
+                if (value == nullptr) {
+                    response.type = Response::Type::RESPONSE;
+                    response.key = "Error";
+                    break;
+                }
+                LOG_INFO("Field: " + field + " ValueSize: " + std::to_string(value->size()));  
+            }
+
+            if(response.fields.empty()) {
+                response.type = Response::Type::RESPONSE;
+                response.key = "Error";
+            }
             break;
         }
 
         case Request::Type::GET_FIELDS: {
             response.type = Response::Type::GET_FIELDS;
             response.fields = store.getSelectedFields(msg.key, msg.fieldNames);
+            if(response.fields.empty() || response.fields.size() != msg.fieldNames.size()) {
+                response.type = Response::Type::RESPONSE;
+                response.key = "Error";
+            }
             break;
         }
 
@@ -115,5 +128,5 @@ void Server::processCommand(const std::string& command, int clientSocket) {
     }
 
     int result  = Protocol::serializeAndSend(response);
-    LOG_INFO("Sent response to client" + std::to_string(result));
+    LOG_INFO("Sent response to client " + std::to_string(result) + "bytes"); 
 }
