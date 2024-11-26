@@ -6,12 +6,35 @@
 #include <sys/socket.h>
 #include <cstring>
 #include "Logger.hpp"
+#include <chrono>
+#include "TimingSerializer.hpp"
 
 const char Protocol::FIELD_SEP = ' ';
 const char Protocol::KV_SEP = '=';
 // std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TwoCopySerializer>(); //=> Uncomment this line to use Twocopy
+
 // std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<IOVecSerializer>(); //=> Uncomment this line to use Onecopy 
-std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<IOVecSerializer>(SendMethod::ZEROCOPY); // => Uncomment this line to use Zerocopy method
+
+// std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<IOVecSerializer>(SendMethod::ZEROCOPY); // => Uncomment this line to use Zerocopy method
+
+// std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
+//     std::make_unique<TwoCopySerializer>(),
+//     "serializer_timing.csv"
+// ); // => Uncomment this line to use TimingSerializer with Twocopy
+
+
+std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
+    std::make_unique<IOVecSerializer>(),
+    "serializer_timing.csv"
+); // => Uncomment this line to use TimingSerializer with Twocopy
+
+
+/*
+std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
+    std::make_unique<IOVecSerializer>(SendMethod::ZEROCOPY),
+    "serializer_timing.csv"
+); // => Uncomment this line to use TimingSerializer with Twocopy
+*/
 
 int Protocol::serializeAndSend(Response& msg) {
     return serializer->serialize(msg);  
