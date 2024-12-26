@@ -46,8 +46,13 @@ void Server::handleClient(int clientSocket) {
         while (true) {
             LOG_INFO("Reading from client");
             int bytesRead = read(clientSocket, buffer, sizeof(buffer));
+            if(bytesRead < 0){
+                LOG_ERROR("Failed to read from client");
+                perror("read");
+                break;
+            }
             LOG_INFO("Read " + std::to_string(bytesRead) + " bytes");
-            if (bytesRead <= 0) goto end;
+            if (bytesRead == 0) goto end;
             data.append(buffer, bytesRead);
             if (bytesRead < sizeof(buffer)) break; 
         }
@@ -126,7 +131,7 @@ void Server::processCommand(const std::string& command, int clientSocket) {
             response.type = Response::Type::RESPONSE;
             break;
     }
-
+    LOG_INFO("Sending response to client");
     int result  = Protocol::serializeAndSend(response);
     LOG_INFO("Sent response to client " + std::to_string(result) + "bytes"); 
 }

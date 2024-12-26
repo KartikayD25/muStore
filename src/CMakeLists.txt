@@ -1,3 +1,6 @@
 file(GLOB SOURCES "./*.cpp")
 add_executable(mustore ${SOURCES})
 include_directories(mustore PUBLIC "./include/")
+include_directories(mustore PUBLIC "./uSer/src")
+include_directories(mustore PUBLIC "./uSer/src/net")
+target_link_libraries(mustore pthread)

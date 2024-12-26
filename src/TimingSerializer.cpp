@@ -10,11 +10,7 @@ TimingSerializer::TimingSerializer(std::unique_ptr<ISerializer> base, const std:
 }
 
 int TimingSerializer::serialize(const Response& msg) {
-    size_t dataSize = msg.key.size();
-    for (const auto& [field, value] : msg.fields) {
-        dataSize += field.size() + value->size();
-    }
-
+    
     auto start = std::chrono::high_resolution_clock::now();
     int result = baseSerializer->serialize(msg);
     auto end = std::chrono::high_resolution_clock::now();
@@ -36,7 +32,7 @@ int TimingSerializer::serialize(const Response& msg) {
             serializerType = "MuSer";
             break;
     }
-    logTiming(serializerType, dataSize, duration);
+    logTiming(serializerType, result, duration);
     
     return result;
 }

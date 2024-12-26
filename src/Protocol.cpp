@@ -1,6 +1,7 @@
 #include "Protocol.hpp"
 #include "TwoCopySerializer.hpp"
 #include "IOVecSerializer.hpp"
+#include "muSer.hpp"
 #include <sstream>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -23,11 +24,16 @@ const char Protocol::KV_SEP = '=';
 // ); // => Uncomment this line to use TimingSerializer with Twocopy
 
 
-std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
-    std::make_unique<IOVecSerializer>(),
-    "serializer_timing.csv"
-); // => Uncomment this line to use TimingSerializer with Twocopy
+// std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
+//     std::make_unique<IOVecSerializer>(),
+//     "serializer_timing.csv"
+// ); // => Uncomment this line to use TimingSerializer with Twocopy
 
+
+std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
+    std::make_unique<MuSer>(),
+    "serializer_timing.csv"
+); // => Uncomment this line to use TimingSerializer with Muser
 
 /*
 std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
