@@ -37,5 +37,5 @@ private:
 #define LOG_DEBUG(msg)
 #define LOG_INFO(msg)  
 #define LOG_WARN(msg)
-#define LOG_ERROR(msg)
+#define LOG_ERROR(msg) Logger::getInstance().log(LogLevel::ERROR, msg, __FILE__, __LINE__)
 #endif

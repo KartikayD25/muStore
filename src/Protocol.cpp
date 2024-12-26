@@ -12,35 +12,34 @@
 
 const char Protocol::FIELD_SEP = ' ';
 const char Protocol::KV_SEP = '=';
-// std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TwoCopySerializer>(); //=> Uncomment this line to use Twocopy
 
-// std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<IOVecSerializer>(); //=> Uncomment this line to use Onecopy 
+#ifdef ONE_COPY
+std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
+    std::make_unique<IOVecSerializer>(),
+    "serializer_timing.csv"
+);
+#endif
 
-// std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<IOVecSerializer>(SendMethod::ZEROCOPY); // => Uncomment this line to use Zerocopy method
-
-// std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
-//     std::make_unique<TwoCopySerializer>(),
-//     "serializer_timing.csv"
-// ); // => Uncomment this line to use TimingSerializer with Twocopy
-
-
-// std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
-//     std::make_unique<IOVecSerializer>(),
-//     "serializer_timing.csv"
-// ); // => Uncomment this line to use TimingSerializer with Twocopy
-
-
+#ifdef MU_SER
 std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
     std::make_unique<MuSer>(),
     "serializer_timing.csv"
-); // => Uncomment this line to use TimingSerializer with Muser
+);
+#endif
 
-/*
+#ifdef ZERO_COPY
 std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
     std::make_unique<IOVecSerializer>(SendMethod::ZEROCOPY),
     "serializer_timing.csv"
-); // => Uncomment this line to use TimingSerializer with Twocopy
-*/
+);
+#endif
+
+#ifdef TWO_COPY
+std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
+    std::make_unique<TwoCopySerializer>(),
+    "serializer_timing.csv"
+); 
+#endif
 
 int Protocol::serializeAndSend(Response& msg) {
     return serializer->serialize(msg);  
