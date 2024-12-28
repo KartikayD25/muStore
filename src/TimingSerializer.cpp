@@ -34,6 +34,12 @@ int TimingSerializer::serialize(const Response& msg) {
         case SendMethod::MuSer:
             serializerType = "MuSer";
             break;
+        case SendMethod::FlatBuffers:
+            serializerType = "FlatBuffers";
+            break;
+        case SendMethod::PROTOBUF:
+            serializerType = "ProtoBuf";
+            break;
     }
     logTiming(serializerType, result, duration);
     
