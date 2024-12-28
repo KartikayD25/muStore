@@ -8,3 +8,7 @@
 [submodule "third_party/abseil-cpp"]
     path = third_party/abseil-cpp
     url = https://github.com/abseil/abseil-cpp.git
+[submodule "src/papi"]
+	path = src/papi
+	url = https://github.com/icl-utk-edu/papi.git
+	branch = master

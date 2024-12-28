@@ -1,5 +1,6 @@
 file(GLOB SOURCES "./*.cpp")
-# find_package(Protobuf CONFIG REQUIRED)
+include(FetchContent)
+
 set(protobuf_BUILD_TESTS OFF)
 add_subdirectory(protobuf)
 add_subdirectory(flatbuffers)
@@ -32,12 +33,30 @@ add_custom_target(flatbuf_gen
     DEPENDS ${DST_DIR}/final_generated.h
 )
 
+set(PAPI_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/papi/install")
+add_custom_command(
+    OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/papi/src/Makefile"
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/papi/src/configure" --prefix=${PAPI_INSTALL_DIR} -with-static-lib=yes
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/papi/src"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/papi/src/configure"
+)
+
+add_custom_target(papi_build
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/papi/src/Makefile"
+    COMMAND make -C "${CMAKE_CURRENT_SOURCE_DIR}/papi/src"
+    COMMAND make -C "${CMAKE_CURRENT_SOURCE_DIR}/papi/src" install
+)
 
 add_executable(mustore_two_copy ${SOURCES})
 target_compile_definitions(mustore_two_copy PRIVATE TWO_COPY)
 include_directories(mustore_two_copy PUBLIC "./include/")
 include_directories(mustore_two_copy PUBLIC "./uSer/src")
 include_directories(mustore_two_copy PUBLIC "./uSer/src/net")
+add_dependencies(mustore_two_copy papi_build)
+target_include_directories(mustore_two_copy PUBLIC "${PAPI_INSTALL_DIR}/include")
+target_link_libraries(mustore_two_copy "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_link_libraries(mustore_two_copy "${PAPI_INSTALL_DIR}/lib/libpfm.a")
+target_link_libraries(mustore_two_copy "${PAPI_INSTALL_DIR}/lib/libsde.a")
 target_link_libraries(mustore_two_copy pthread)
 
 add_executable(mustore_one_copy ${SOURCES})
@@ -45,6 +64,12 @@ target_compile_definitions(mustore_one_copy PRIVATE ONE_COPY)
 include_directories(mustore_one_copy PUBLIC "./include/")
 include_directories(mustore_one_copy PUBLIC "./uSer/src")
 include_directories(mustore_one_copy PUBLIC "./uSer/src/net")
+add_dependencies(mustore_one_copy papi_build)
+target_link_libraries(mustore_one_copy "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_link_libraries(mustore_one_copy "${PAPI_INSTALL_DIR}/lib/libpfm.a")
+target_link_libraries(mustore_one_copy "${PAPI_INSTALL_DIR}/lib/libsde.a")
+target_link_libraries(mustore_one_copy "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_include_directories(mustore_one_copy PUBLIC "${PAPI_INSTALL_DIR}/include")
 target_link_libraries(mustore_one_copy pthread)
 
 add_executable(mustore_zero_copy ${SOURCES})
@@ -52,6 +77,12 @@ target_compile_definitions(mustore_zero_copy PRIVATE ZERO_COPY)
 include_directories(mustore_zero_copy PUBLIC "./include/")
 include_directories(mustore_zero_copy PUBLIC "./uSer/src")
 include_directories(mustore_zero_copy PUBLIC "./uSer/src/net")
+add_dependencies(mustore_zero_copy papi_build)
+target_link_libraries(mustore_zero_copy "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_link_libraries(mustore_zero_copy "${PAPI_INSTALL_DIR}/lib/libpfm.a")
+target_link_libraries(mustore_zero_copy "${PAPI_INSTALL_DIR}/lib/libsde.a")
+target_link_libraries(mustore_zero_copy "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_include_directories(mustore_zero_copy PUBLIC "${PAPI_INSTALL_DIR}/include")
 target_link_libraries(mustore_zero_copy pthread)
 
 add_executable(mustore_muser ${SOURCES})
@@ -60,6 +91,13 @@ include_directories(mustore_muser PUBLIC "./include/")
 include_directories(mustore_muser PUBLIC "./uSer/src")
 include_directories(mustore_muser PUBLIC "./uSer/src/net")
 target_link_libraries(mustore_muser pthread)
+add_dependencies(mustore_muser papi_build)
+target_link_libraries(mustore_muser "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_link_libraries(mustore_muser "${PAPI_INSTALL_DIR}/lib/libpfm.a")
+target_link_libraries(mustore_muser "${PAPI_INSTALL_DIR}/lib/libsde.a")
+target_link_libraries(mustore_muser "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_include_directories(mustore_muser PUBLIC "${PAPI_INSTALL_DIR}/include")
+
 
 add_executable(mustore_protobuf ${SOURCES}  "${CMAKE_CURRENT_SOURCE_DIR}/include/final.pb.cc" "${CMAKE_CURRENT_SOURCE_DIR}/ext-serializers/Protobuf.cpp")
 target_compile_definitions(mustore_protobuf PRIVATE PROTO_BUF)
@@ -70,6 +108,14 @@ include_directories(mustore_protobuf PUBLIC "./uSer/src")
 include_directories(mustore_protobuf PUBLIC "./uSer/src/net")
 target_link_libraries(mustore_protobuf protobuf::libprotobuf)
 target_link_libraries(mustore_protobuf pthread)
+add_dependencies(mustore_protobuf papi_build)
+target_link_libraries(mustore_protobuf "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_link_libraries(mustore_protobuf "${PAPI_INSTALL_DIR}/lib/libpfm.a")
+target_link_libraries(mustore_protobuf "${PAPI_INSTALL_DIR}/lib/libsde.a")
+target_link_libraries(mustore_protobuf "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_include_directories(mustore_protobuf PUBLIC "${PAPI_INSTALL_DIR}/include")
+
+
 
 add_executable(mustore_flatbuffers ${SOURCES}  "${CMAKE_CURRENT_SOURCE_DIR}/ext-serializers/FlatBuffers.cpp")
 target_compile_definitions(mustore_flatbuffers PRIVATE FLAT_BUF)
@@ -79,6 +125,13 @@ include_directories(mustore_flatbuffers PUBLIC "./uSer/src")
 include_directories(mustore_flatbuffers PUBLIC "./uSer/src/net")
 target_link_libraries(mustore_flatbuffers flatbuffers)
 target_link_libraries(mustore_flatbuffers pthread)
+add_dependencies(mustore_flatbuffers papi_build)
+target_link_libraries(mustore_flatbuffers "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_link_libraries(mustore_flatbuffers "${PAPI_INSTALL_DIR}/lib/libpfm.a")
+target_link_libraries(mustore_flatbuffers "${PAPI_INSTALL_DIR}/lib/libsde.a")
+target_link_libraries(mustore_flatbuffers "${PAPI_INSTALL_DIR}/lib/libpapi.a")
+target_include_directories(mustore_flatbuffers PUBLIC "${PAPI_INSTALL_DIR}/include")
+
 
 # target_compile_definitions(mustore_two_copy PRIVATE DEBUGMODE)
 # target_compile_definitions(mustore_one_copy PRIVATE DEBUGMODE)
