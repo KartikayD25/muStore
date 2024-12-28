@@ -11,5 +11,5 @@ public:
 private:
     std::unique_ptr<ISerializer> baseSerializer;
     std::ofstream csvFile;
-    void logTiming(const std::string& serializerType, size_t dataSize, long long duration, long long cacheMisses, long long branchMisses, long long cpuCycles);
+    void logTiming(const std::string& serializerType, size_t dataSize, long long duration, long long cacheMisses, long long branchMisses, long long cpuCycles, long long maxMemory);
 };

@@ -10,11 +10,6 @@ IOVecSerializer::IOVecSerializer(SendMethod method) : sendMethod(method) {}
 int IOVecSerializer::serialize(const Response& msg) {
     iovecs.clear();
     std::string type = std::to_string(static_cast<int>(msg.type));
-    addIovec(type);
-    addIovec(" ", 1);
-    addIovec(msg.key);
-    addIovec(" ", 1);
-
     switch(msg.type) {
         case Response::Type::SET_FIELDS:
         case Response::Type::RESPONSE:
@@ -28,6 +23,7 @@ int IOVecSerializer::serialize(const Response& msg) {
             break;
     }
 
+    addIovec(msg.key);
     addIovec("\n", 1);
 
     struct msghdr message = {};
@@ -47,41 +43,25 @@ void IOVecSerializer::addIovec(const std::string& str) {
     addIovec(str.c_str(), str.size());
 }
 
+void IOVecSerializer::addIovec(const std::string * str) {
+    addIovec(str->c_str(), str->size());
+}
+
 void IOVecSerializer::serializeFields(const Response& msg) {
-    std::string count = std::to_string(msg.fields.size());
-    addIovec(count);
-    addIovec(" ", 1);
-    
     for (auto& [field, value] : msg.fields) {
-        addIovec(field);
-        addIovec("=", 1);
-        addIovec(*value);
-        addIovec(" ", 1);
+        
+        addIovec(value);
     }
 }
 
 void IOVecSerializer::serializeGetFields(const Response& msg) {
-    std::string count = std::to_string(msg.fieldNames.size());
-    addIovec(count);
-    addIovec(" ", 1);
-    
     for (auto& field : msg.fieldNames) {
-        addIovec(field);
-        addIovec("=", 1);
-        addIovec(*msg.fields.at(field));
-        addIovec(" ", 1);
+        addIovec(msg.fields.at(field));
     }
 }
 
 void IOVecSerializer::serializeGetAll(const Response& msg) {
-    std::string count = std::to_string(msg.fields.size());
-    addIovec(count);
-    addIovec(" ", 1);
-    
     for (auto& [field, value] : msg.fields) {
-        addIovec(field);
-        addIovec("=", 1);
-        addIovec(*value);
-        addIovec(" ", 1);
+        addIovec(value);
     }
 }
