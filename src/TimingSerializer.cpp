@@ -25,8 +25,21 @@ int TimingSerializer::serialize(const Response& msg) {
     int events[3] = {PAPI_L3_TCM, PAPI_BR_MSP, PAPI_TOT_CYC};
     long long values[3] = {-1, -1, -1}; // Default to -1 for unsupported events
 
+    int EventSet = PAPI_NULL;
+    if (PAPI_create_eventset(&EventSet) != PAPI_OK) {
+        throw std::runtime_error("PAPI create event set error");
+    }
+
+    if (PAPI_add_events(EventSet, events, 3) != PAPI_OK) {
+        PAPI_cleanup_eventset(EventSet);
+        PAPI_destroy_eventset(&EventSet);
+        throw std::runtime_error("PAPI add events error");
+    }
+
     // Start counting
-    if (PAPI_start_counters(events, 3) != PAPI_OK) {
+    if (PAPI_start(EventSet) != PAPI_OK) {
+        PAPI_cleanup_eventset(EventSet);
+        PAPI_destroy_eventset(&EventSet);
         return baseSerializer->serialize(msg);
     }
 
@@ -35,9 +48,14 @@ int TimingSerializer::serialize(const Response& msg) {
     auto end = std::chrono::high_resolution_clock::now();
 
     // Stop counting and read the values
-    if (PAPI_stop_counters(values, 3) != PAPI_OK) {
+    if (PAPI_stop(EventSet, values) != PAPI_OK) {
+        PAPI_cleanup_eventset(EventSet);
+        PAPI_destroy_eventset(&EventSet);
         return result;
     }
+
+    PAPI_cleanup_eventset(EventSet);
+    PAPI_destroy_eventset(&EventSet);
 
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 
