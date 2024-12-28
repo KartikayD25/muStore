@@ -1,4 +1,5 @@
 #include "Protocol.hpp"
+#include "Protobuf.hpp"
 #include "TwoCopySerializer.hpp"
 #include "IOVecSerializer.hpp"
 #include "muSer.hpp"
@@ -43,7 +44,7 @@ std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSeria
 
 #ifdef PROTO_BUF
 std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
-    std::make_unique<TwoCopySerializer>(),
+    std::make_unique<Protobuf>(),
     "serializer_timing.csv"
 ); 
 #endif
