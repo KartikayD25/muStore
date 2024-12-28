@@ -18,7 +18,7 @@ int FlatBuffers::serialize(const Response& msg) {
     auto h = builder.CreateString(msg.fields.empty() ? "" : *msg.fields.at("field8"));
     auto i = builder.CreateString(msg.fields.empty() ? "" : *msg.fields.at("field9"));
     auto j = builder.CreateString(msg.fields.empty() ? "" : *msg.fields.at("field0"));
-    auto k = builder.CreateString(msg.key);
+    auto k = builder.CreateString(msg.key + '\n');
     
     auto person = uSer::test::proto::CreatePerson(builder, a, b, c, d, e, f, g, h, i, j, k);
     builder.Finish(person);
