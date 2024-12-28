@@ -1,4 +1,8 @@
-[submodule "Abseil"]
-    path = /src/abseil-cpp
-    url = https://github.com/abseil/abseil-cpp.git
-    branch = lts_2024_07_22
+[submodule "src/abseil-cpp"]
+	path = src/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git
+	branch = lts_2024_07_22
+[submodule "src/protobuf"]
+	path = src/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
+	branch = 29.x

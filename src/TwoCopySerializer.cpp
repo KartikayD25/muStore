@@ -4,8 +4,6 @@
 
 int TwoCopySerializer::serialize(const Response& msg) {
     std::ostringstream oss;
-    oss << static_cast<int>(msg.type) << " " 
-        << msg.key << " ";
 
     switch(msg.type) {
         case Response::Type::SET_FIELDS:
@@ -20,6 +18,7 @@ int TwoCopySerializer::serialize(const Response& msg) {
             break;
     }
 
+    oss << msg.key;
     oss << "\n";
     std::string output = oss.str();
     return send(msg.clientSocket, output.c_str(), output.size(), 0);
@@ -28,20 +27,20 @@ int TwoCopySerializer::serialize(const Response& msg) {
 void TwoCopySerializer::serializeFields(std::ostringstream& oss, const Response& msg) {
     oss << msg.fields.size() << " ";
     for (const auto& [field, value] : msg.fields) {
-        oss << field << "=" << *value << " ";
+        oss  << *value ;
     }
 }
 
 void TwoCopySerializer::serializeGetFields(std::ostringstream& oss, const Response& msg) {
     oss << msg.fieldNames.size() << " ";
     for (const auto& field : msg.fieldNames) {
-        oss << field << "=" << *msg.fields.at(field) << " ";
+        oss << *msg.fields.at(field) ;
     }
 }
 
 void TwoCopySerializer::serializeGetAll(std::ostringstream& oss, const Response& msg) {
     oss << msg.fields.size() << " ";
     for (const auto& [field, value] : msg.fields) {
-        oss << field << "=" << *value << " ";
+        oss << *value ;
     }
 }
