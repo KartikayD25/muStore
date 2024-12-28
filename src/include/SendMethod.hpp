@@ -6,7 +6,9 @@ enum class SendMethod {
     TWOCOPY,
     ONECOPY,
     ZEROCOPY,
-    MuSer
+    MuSer,
+    PROTOBUF,
+    FlatBuffers
     };
 struct Response {
     enum class Type {

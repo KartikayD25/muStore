@@ -1,6 +1,61 @@
+# include(FindProtobuf)
 file(GLOB SOURCES "./*.cpp")
-add_executable(mustore ${SOURCES})
-include_directories(mustore PUBLIC "./include/")
-include_directories(mustore PUBLIC "./uSer/src")
-include_directories(mustore PUBLIC "./uSer/src/net")
-target_link_libraries(mustore pthread)
+find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIR})
+# find_package(absl REQUIRED)
+
+set(ABSL_BUILD_TESTING OFF)
+set(ABSL_ENABLE_INSTALL ON)
+set(protobuf_BUILD_TESTS OFF)
+
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/uSer/test/proto")
+set(DST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+add_custom_command(
+    OUTPUT ${DST_DIR}/final.pb.cc ${DST_DIR}/final.pb.h
+    COMMAND protoc -I=${SRC_DIR} --cpp_out=${DST_DIR} ${SRC_DIR}/final.proto
+    DEPENDS ${SRC_DIR}/final.proto
+    COMMENT "Running protoc on addressbook.proto"
+)
+
+add_custom_target(protobuf_gen
+    DEPENDS ${DST_DIR}/final.pb.cc ${DST_DIR}/final.pb.h
+)
+
+
+add_executable(mustore_two_copy ${SOURCES})
+target_compile_definitions(mustore_two_copy PRIVATE TWO_COPY)
+include_directories(mustore_two_copy PUBLIC "./include/")
+include_directories(mustore_two_copy PUBLIC "./uSer/src")
+include_directories(mustore_two_copy PUBLIC "./uSer/src/net")
+target_link_libraries(mustore_two_copy pthread)
+
+add_executable(mustore_one_copy ${SOURCES})
+target_compile_definitions(mustore_one_copy PRIVATE ONE_COPY)
+include_directories(mustore_one_copy PUBLIC "./include/")
+include_directories(mustore_one_copy PUBLIC "./uSer/src")
+include_directories(mustore_one_copy PUBLIC "./uSer/src/net")
+target_link_libraries(mustore_one_copy pthread)
+
+add_executable(mustore_zero_copy ${SOURCES})
+target_compile_definitions(mustore_zero_copy PRIVATE ZERO_COPY)
+include_directories(mustore_zero_copy PUBLIC "./include/")
+include_directories(mustore_zero_copy PUBLIC "./uSer/src")
+include_directories(mustore_zero_copy PUBLIC "./uSer/src/net")
+target_link_libraries(mustore_zero_copy pthread)
+
+add_executable(mustore_muser ${SOURCES})
+target_compile_definitions(mustore_muser PRIVATE MU_SER)
+include_directories(mustore_muser PUBLIC "./include/")
+include_directories(mustore_muser PUBLIC "./uSer/src")
+include_directories(mustore_muser PUBLIC "./uSer/src/net")
+target_link_libraries(mustore_muser pthread)
+
+add_executable(mustore_protobuf ${SOURCES} "${CMAKE_CURRENT_SOURCE_DIR}/ext-serializers/Protobuf.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/final.pb.cc")
+target_compile_definitions(mustore_protobuf PRIVATE PROTO_BUF)
+add_dependencies(mustore_protobuf protobuf_gen )
+include_directories(mustore_protobuf PUBLIC "./include/")
+include_directories(mustore_protobuf PUBLIC "./uSer/src")
+include_directories(mustore_protobuf PUBLIC "./uSer/src/net")
+target_link_libraries(mustore_protobuf  ${PROTOBUF_LIBRARY})
+target_link_libraries(mustore_protobuf pthread)
