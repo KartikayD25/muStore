@@ -3,20 +3,6 @@
 #include "final.pb.h"
 Protobuf::Protobuf() : sendMethod(SendMethod::PROTOBUF) {
 }
-// if(msg.fields.empty()) {
-//         p->set_field1("");
-//         p->set_field2("");
-//         p->set_field3("");
-//         p->set_field4("");
-//         p->set_field5("");
-//         p->set_field6("");
-//         p->set_field7("");
-//         p->set_field8("");
-//         p->set_field9("");
-//         p->set_field10("");
-//         p->set_field11(msg.key + '\n');
-//         return p->serializeAndWrite(&conn, user::SerializationMethod::ZC);
-//     }
 int Protobuf::serialize(const Response& msg) {
     Person p;
     if (msg.fields.empty()) {
@@ -46,6 +32,7 @@ int Protobuf::serialize(const Response& msg) {
     p.set_i(*msg.fields.at("field9"));
     p.set_j(*msg.fields.at("field0"));
     p.set_k(msg.key);
+    
     p.SerializePartialToFileDescriptor(msg.clientSocket);
     return p.ByteSizeLong();
 }

@@ -1,19 +1,31 @@
 file(GLOB SOURCES "./*.cpp")
 # find_package(Protobuf CONFIG REQUIRED)
 set(protobuf_BUILD_TESTS OFF)
-add_subdirectory(protobufe)
+add_subdirectory(protobuf)
+add_subdirectory(flatbuffers)
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/uSer/test/proto")
 set(DST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_custom_command(
     OUTPUT ${DST_DIR}/final.pb.cc ${DST_DIR}/final.pb.h
-    COMMAND protoc -I=${SRC_DIR} --cpp_out=${DST_DIR} ${SRC_DIR}/final.proto
+    COMMAND "${CMAKE_BINARY_DIR}/src/protobuf/protoc" -I=${SRC_DIR} --cpp_out=${DST_DIR} ${SRC_DIR}/final.proto
     DEPENDS ${SRC_DIR}/final.proto
-    COMMENT "Running protoc on addressbook.proto"
+    COMMENT "Running protoc on final.proto"
 )
 
 add_custom_target(protobuf_gen
     DEPENDS ${DST_DIR}/final.pb.cc ${DST_DIR}/final.pb.h
+)
+
+add_custom_command(
+    OUTPUT ${DST_DIR}/final_generated.h
+    COMMAND flatc -b --cpp -I ${SRC_DIR} -o ${DST_DIR} ${SRC_DIR}/final.fbs
+    DEPENDS ${SRC_DIR}/final.fbs
+    COMMENT "Running flatc on final.fbs"
+)
+
+add_custom_target(flatbuf_gen
+    DEPENDS ${DST_DIR}/final_generated.h
 )
 
 
@@ -53,3 +65,12 @@ include_directories(mustore_protobuf PUBLIC "./uSer/src")
 include_directories(mustore_protobuf PUBLIC "./uSer/src/net")
 target_link_libraries(mustore_protobuf protobuf::libprotobuf)
 target_link_libraries(mustore_protobuf pthread)
+
+add_executable(mustore_flatbuffers ${SOURCES}  "${CMAKE_CURRENT_SOURCE_DIR}/include/final.pb.cc" "${CMAKE_CURRENT_SOURCE_DIR}/ext-serializers/FlatBuffers.cpp")
+target_compile_definitions(mustore_flatbuffers PRIVATE FLAT_BUF)
+add_dependencies(mustore_flatbuffers flatbuf_gen )
+include_directories(mustore_flatbuffers PUBLIC "./include/")
+include_directories(mustore_flatbuffers PUBLIC "./uSer/src")
+include_directories(mustore_flatbuffers PUBLIC "./uSer/src/net")
+target_link_libraries(mustore_flatbuffers flatbuffers)
+target_link_libraries(mustore_flatbuffers pthread)

@@ -9,6 +9,7 @@
 #include <cstring>
 #include "Logger.hpp"
 #include <chrono>
+#include "FlatBuffers.hpp"
 #include "TimingSerializer.hpp"
 
 const char Protocol::FIELD_SEP = ' ';
@@ -48,6 +49,14 @@ std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSeria
     "serializer_timing.csv"
 ); 
 #endif
+
+#ifdef FLAT_BUF
+std::unique_ptr<ISerializer> Protocol::serializer = std::make_unique<TimingSerializer>(
+    std::make_unique<FlatBuffers>(),
+    "serializer_timing.csv"
+); 
+#endif
+
 
 int Protocol::serializeAndSend(Response& msg) {
     return serializer->serialize(msg);  
