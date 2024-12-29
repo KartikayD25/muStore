@@ -192,7 +192,7 @@ public:
   /* Set */
 public:
     // Field: first_name (id: 1)
-    void set_field1(std::string& val) {
+    void set_field1(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 1;
@@ -215,7 +215,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field2(std::string& val) {
+    void set_field2(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 2;
@@ -238,7 +238,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field3(std::string& val) {
+    void set_field3(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 3;
@@ -261,7 +261,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field4(std::string& val) {
+    void set_field4(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 4;
@@ -284,7 +284,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field5(std::string& val) {
+    void set_field5(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 5;
@@ -307,7 +307,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field6(std::string& val) {
+    void set_field6(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 6;
@@ -330,7 +330,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field7(std::string& val) {
+    void set_field7(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 7;
@@ -353,7 +353,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field8(std::string& val) {
+    void set_field8(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 8;
@@ -376,7 +376,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field9(std::string& val) {
+    void set_field9(const  std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 9;
@@ -399,7 +399,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field10(std::string& val) {
+    void set_field10(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 10;
@@ -422,7 +422,7 @@ public:
         return field->getValStr();
     }  
 
-    void set_field11(std::string& val) {
+    void set_field11(const std::string& val) {
         static_assert(TypeHelper::IsComplexType<std::string>::value,
                      "String must be complex type");
         constexpr uint32_t id = 11;
@@ -447,7 +447,7 @@ public:
 
   /* Clear */
 
-  inline void clear(const std::string &mem_name) {
+  inline void clear(std::string &mem_name) {
     uint32_t id = symbol_->get_member_id(mem_name);
     auto mem_sym = symbol_->members_[id - 1];
     assert(mem_sym.repeated_);
@@ -462,7 +462,7 @@ public:
 
   /* Size */
 
-  inline size_t size(const std::string &mem_name) {
+  inline size_t size(std::string &mem_name) {
     uint32_t id = symbol_->get_member_id(mem_name);
     auto mem_sym = symbol_->members_[id - 1];
     assert(mem_sym.repeated_);

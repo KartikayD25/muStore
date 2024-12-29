@@ -1,0 +1,17 @@
+namespace uSer.test.proto;
+
+table Person {
+    A: string;
+    B: string;
+    C: string;
+    D: string;
+    E: string;
+    F: string;
+    G: string;
+    H: string;
+    I: string;
+    J: string;
+    K: string;
+}
+
+root_type Person;

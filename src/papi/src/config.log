@@ -753,7 +753,7 @@ configure:4342: checking for sched.h
 configure:4342: result: yes
 configure:4355: checking for gethrtime
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/ccmePGVw.o: in function `main':
+/usr/bin/ld: /tmp/ccoCco51.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `gethrtime'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1
@@ -826,7 +826,7 @@ configure: failed program was:
 configure:4355: result: no
 configure:4355: checking for read_real_time
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/ccXP5lOm.o: in function `main':
+/usr/bin/ld: /tmp/ccVtteP5.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `read_real_time'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1
@@ -899,7 +899,7 @@ configure: failed program was:
 configure:4355: result: no
 configure:4355: checking for time_base_to_time
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/ccTmX1jq.o: in function `main':
+/usr/bin/ld: /tmp/ccH7CONE.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `time_base_to_time'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1
@@ -976,7 +976,7 @@ configure:4355: $? = 0
 configure:4355: result: yes
 configure:4355: checking for mach_absolute_time
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/ccvHYNQi.o: in function `main':
+/usr/bin/ld: /tmp/cccSszMG.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `mach_absolute_time'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1

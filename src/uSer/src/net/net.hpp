@@ -9,8 +9,10 @@
 #include <linux/errqueue.h>  // For SO_EE_ORIGIN_ZEROCOPY
 #include <sys/socket.h>      // For socket options
 #include <netinet/in.h>
-
+#include <netinet/tcp.h>
+#include <thread>
 namespace user {
+  class Message;
 namespace net {
 
 using common::Address;
@@ -37,7 +39,9 @@ struct Conn {
     completion_thread_ = std::thread(&Conn::processCompletions, this);
 
   }
-
+  Conn(int sock) : proto_(ConnProto::TCP), is_active_(true), sock_(sock) {
+    completion_thread_ = std::thread(&Conn::processCompletions, this);
+  };
   ~Conn() { 
     should_stop = true;
     if(completion_thread_.joinable()){
@@ -53,7 +57,7 @@ struct Conn {
     }
   }
   void Close() {
-    if (is_active_ && close(sock_) == -1) {
+    if (is_active_) {
         is_closed_ = true;
         cleanup();
       // common::HandleSyscallError("close");

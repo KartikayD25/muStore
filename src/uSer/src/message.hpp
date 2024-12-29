@@ -110,6 +110,8 @@ public:
   }
 
   inline void setVal(std::string &val) { setVal(val.data(), val.length()); }
+  inline void setVal(const std::string &val) { setVal(val.data(), val.length()); }
+
   inline void setVal(const char *val) { setVal(val, strlen(val)); }
   inline void setVal(const char *val, size_t len) {
     val_ = val;
