@@ -10,7 +10,6 @@ std::mutex mtx;
 TimingSerializer::TimingSerializer(std::unique_ptr<ISerializer> base, const std::string &csvPath)
     : baseSerializer(std::move(base))
 {
-    std::lock_guard<std::mutex> lock(mtx);
     csvFile.open(csvPath, std::ios::app);
     if (!csvFile.tellp())
     {
@@ -26,7 +25,6 @@ TimingSerializer::TimingSerializer(std::unique_ptr<ISerializer> base, const std:
         LOG_ERROR("PAPI thread initialization error!");
         throw std::runtime_error("PAPI thread initialization error!");
     }
-    
 }
 
 int TimingSerializer::serialize(const Response &msg)
@@ -42,86 +40,92 @@ int TimingSerializer::serialize(const Response &msg)
     long long maxMemory;
     std::chrono::_V2::system_clock::rep duration;
     std::chrono::_V2::system_clock::time_point start, end;
-    if(PAPI_is_initialized() == PAPI_NOT_INITED)
     {
-        LOG_ERROR("PAPI thread level not initialized!");
-        return baseSerializer->serialize(msg);
-    }
-
-    if (PAPI_create_eventset(&eventSet) != PAPI_OK)
-    {
-        LOG_ERROR("PAPI create event set error!");
-        return baseSerializer->serialize(msg);
-    }
-    
-    if (PAPI_query_event(PAPI_TOT_CYC) == PAPI_OK)
-    {
-        if (PAPI_add_event(eventSet, PAPI_TOT_CYC) != PAPI_OK)
+        if (PAPI_is_initialized() == PAPI_NOT_INITED)
         {
-            PAPI_perror("PAPI add event PAPI_TOT_CYC error!"); 
-            LOG_ERROR("PAPI add event PAPI_TOT_CYC error!");
+            LOG_ERROR("PAPI thread level not initialized!");
             return baseSerializer->serialize(msg);
         }
-        cpuCycles = 0;
-    }
-    else
-    {
-        LOG_WARN("PAPI event PAPI_TOT_CYC not supported!");
-    }
 
-    if (PAPI_query_event(PAPI_L3_TCM) == PAPI_OK)
-    {
-        if (PAPI_add_event(eventSet, PAPI_L3_TCM) != PAPI_OK)
+        if (PAPI_create_eventset(&eventSet) != PAPI_OK)
         {
-            PAPI_perror("PAPI add event PAPI_L3_TCM error!");
-            LOG_ERROR("PAPI add event PAPI_L3_TCM error!");
+            LOG_ERROR("PAPI create event set error!");
             return baseSerializer->serialize(msg);
         }
-        cacheMisses = 0;
-    }
-    else
-    {
-        LOG_WARN("PAPI event PAPI_L3_TCM not supported!");
-    }
 
-    if (PAPI_query_event(PAPI_BR_MSP) == PAPI_OK)
-    {
-        if (PAPI_add_event(eventSet, PAPI_BR_MSP) != PAPI_OK)
+        if (PAPI_query_event(PAPI_TOT_CYC) == PAPI_OK)
         {
-            PAPI_perror("PAPI add event PAPI_BR_MSP error!");
-            LOG_ERROR("PAPI add event PAPI_BR_MSP error!");
-            return baseSerializer->serialize(msg);
+            if (PAPI_add_event(eventSet, PAPI_TOT_CYC) != PAPI_OK)
+            {
+                PAPI_perror("PAPI add event PAPI_TOT_CYC error!");
+                LOG_ERROR("PAPI add event PAPI_TOT_CYC error!");
+                return baseSerializer->serialize(msg);
+            }
+            cpuCycles = 0;
         }
-        branchMisses = 0;
-    }
-    else
-    {
-        LOG_WARN("PAPI event PAPI_BR_MSP not supported!");
-    }
+        else
+        {
+            LOG_WARN("PAPI event PAPI_TOT_CYC not supported!");
+        }
 
-    if (PAPI_start(eventSet) != PAPI_OK)
-    {
-        LOG_ERROR("PAPI start counters error!");
-        PAPI_cleanup_eventset(eventSet);
-        PAPI_reset(eventSet);
-        PAPI_destroy_eventset(&eventSet);
-        PAPI_perror("PAPI start counters error!");
-        goto error;
+        if (PAPI_query_event(PAPI_L3_TCM) == PAPI_OK)
+        {
+            if (PAPI_add_event(eventSet, PAPI_L3_TCM) != PAPI_OK)
+            {
+                PAPI_perror("PAPI add event PAPI_L3_TCM error!");
+                LOG_ERROR("PAPI add event PAPI_L3_TCM error!");
+                return baseSerializer->serialize(msg);
+            }
+            cacheMisses = 0;
+        }
+        else
+        {
+            LOG_WARN("PAPI event PAPI_L3_TCM not supported!");
+        }
+
+        if (PAPI_query_event(PAPI_BR_MSP) == PAPI_OK)
+        {
+            if (PAPI_add_event(eventSet, PAPI_BR_MSP) != PAPI_OK)
+            {
+                PAPI_perror("PAPI add event PAPI_BR_MSP error!");
+                LOG_ERROR("PAPI add event PAPI_BR_MSP error!");
+                return baseSerializer->serialize(msg);
+            }
+            branchMisses = 0;
+        }
+        else
+        {
+            LOG_WARN("PAPI event PAPI_BR_MSP not supported!");
+        }
+
+        if (PAPI_start(eventSet) != PAPI_OK)
+        {
+            LOG_ERROR("PAPI start counters error!");
+            PAPI_cleanup_eventset(eventSet);
+            PAPI_reset(eventSet);
+            PAPI_destroy_eventset(&eventSet);
+            PAPI_perror("PAPI start counters error!");
+            goto error;
+        }
     }
 
     start = std::chrono::high_resolution_clock::now();
     result = baseSerializer->serialize(msg);
     end = std::chrono::high_resolution_clock::now();
-
-    if (PAPI_stop(eventSet, counters) != PAPI_OK)
     {
-        LOG_ERROR("PAPI stop counters error!");
-        PAPI_perror("PAPI stop counters error!");
-        return result;
-    }else{
-        PAPI_cleanup_eventset(eventSet);
-        PAPI_reset(eventSet);
-        PAPI_destroy_eventset(&eventSet);
+
+        if (PAPI_stop(eventSet, counters) != PAPI_OK)
+        {
+            LOG_ERROR("PAPI stop counters error!");
+            PAPI_perror("PAPI stop counters error!");
+            return result;
+        }
+        else
+        {
+            PAPI_cleanup_eventset(eventSet);
+            PAPI_reset(eventSet);
+            PAPI_destroy_eventset(&eventSet);
+        }
     }
     duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 
@@ -150,15 +154,23 @@ int TimingSerializer::serialize(const Response &msg)
     case SendMethod::MuSer:
         serializerType = "MuSer";
         break;
+    case SendMethod::PROTOBUF:
+        serializerType = "Protobuf";
+        break;
+    case SendMethod::FlatBuffers:
+        serializerType = "FlatBuffers";
+        break;
     }
     logTiming(serializerType, result, duration, cacheMisses, branchMisses, cpuCycles, maxMemory);
     return result;
 
 error:
+{
     PAPI_stop(eventSet, counters);
     PAPI_cleanup_eventset(eventSet);
     PAPI_reset(eventSet);
     PAPI_destroy_eventset(&eventSet);
+}
     return baseSerializer->serialize(msg);
 }
 

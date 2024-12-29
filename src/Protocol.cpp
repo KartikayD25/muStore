@@ -126,5 +126,8 @@ int Protocol::createSocket(int port) {
             throw std::runtime_error("Failed to set SO_ZEROCOPY");
         }
     }
+    struct timeval tv;
+    tv.tv_sec = 10;  /* 30 Secs Timeout */
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
     return sock;
 }

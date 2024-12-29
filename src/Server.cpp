@@ -51,11 +51,11 @@ void Server::handleClient(int clientSocket) {
         char buffer[1024];
         while (true) {
             LOG_INFO("Reading from client");
-            int bytesRead = read(clientSocket, buffer, sizeof(buffer));
+            int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
             if(bytesRead < 0){
-                LOG_ERROR("Failed to read from client");
-                perror("read");
-                break;
+            LOG_ERROR("Failed to read from client");
+            perror("recv");
+            break;
             }
             LOG_INFO("Read " + std::to_string(bytesRead) + " bytes");
             if (bytesRead == 0) goto end;
