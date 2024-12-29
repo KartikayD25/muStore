@@ -8,5 +8,3 @@
 [submodule "third_party/abseil-cpp"]
     path = third_party/abseil-cpp
     url = https://github.com/abseil/abseil-cpp.git
-[submodule "src/uSer"]
-    path = src/uSer

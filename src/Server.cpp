@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cstring>
 #include "Logger.hpp"
+#include "papi.h"
 Server::Server(int port) : port(port) {
     serverSocket = Protocol::createSocket(port);
     serverAddr.sin_family = AF_INET;
@@ -40,6 +41,11 @@ void Server::start() {
 
 void Server::handleClient(int clientSocket) {
     LOG_INFO("Handling client");
+    if (PAPI_thread_init(pthread_self) != PAPI_OK)
+    {
+        LOG_ERROR("PAPI thread initialization error!");
+        throw std::runtime_error("PAPI thread initialization error!");
+    }
     while (true) {
         std::string data;
         char buffer[1024];
