@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+message Person {
+    string name = 1;
+    int32 age = 2;
+}
+
+message Persons {
+    repeated string name = 1;
+    repeated int32 age = 2;
+}
+
+
+https://teams.microsoft.com/l/meetup-join/19:aac29fc51cc34ea6b825c584f96325d6@thread.tacv2/1732718025892?context=%7B%22Tid%22:%22c9613df7-b16f-476b-8d8b-64bbab406416%22,%22Oid%22:%227769b72e-1c85-4735-a803-633bbb201dd7%22%7Dmessage Geo {
+    float lat = 1;
+    float long = 2;
+}
+
+message Profile {
+    repeated string hotel_ids = 1;
+    string locale = 2;
+}
+
+message Rate {
+    repeated string hotel_ids = 1;
+    string indate = 2;
+    string outdate = 3;
+}
+
+message Recommendation {
+    string required = 1;
+    double lat = 2;
+    double long = 3;
+}
+
+message Search {
+    float lat = 1;
+    float long = 2;
+    string indate = 3;
+    string outdate = 4;
+}
+
+message user {
+    string username = 1;
+    string password = 2;
+}

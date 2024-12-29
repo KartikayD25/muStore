@@ -1,0 +1,2 @@
+method,type,bytes,num_fields,avg_alloc_time,avg_dealloc_time,avg_copy_time,avg_prep_time,avg_write_time,avg_total_time
+SG,0,3471,420,0.000,0.000,0.000,995.800,1922.800,2918.600

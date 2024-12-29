@@ -1,0 +1,11 @@
+namespace FBschema;
+
+table T1 {
+  t1: string;
+  t2: string;
+}
+
+table T2 {
+  a1: [string];
+  a2: [string];
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message M1 {
+	string m1 = 1;
+	string m2 = 2;
+}
+
+message M2 {
+	repeated string a1 = 1;
+	repeated string a2 = 2;
+}

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message VideoMetadata {
+    string name = 1;
+    int32 duration = 2;
+    int32 Likes = 3;
+    int32 Dislikes = 4;
+    repeated string comments = 5;
+}
