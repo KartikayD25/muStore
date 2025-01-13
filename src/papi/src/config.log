@@ -27,10 +27,9 @@ uname -v = #1 SMP Fri Mar 29 23:14:13 UTC 2024
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
 
-PATH: /home/kartikayd/.vscode-server/bin/fabdb6a30b49f79a7aba0f2ad9df9b399473380f/bin/remote-cli
-PATH: /opt/apache-maven-3.6.3/bin
-PATH: /home/kartikayd/.local/bin
+PATH: /home/kartikayd/.sdkman/candidates/java/current/bin
 PATH: /home/kartikayd/.nvm/versions/node/v23.3.0/bin
+PATH: /home/kartikayd/.cargo/bin
 PATH: /usr/local/sbin
 PATH: /usr/local/bin
 PATH: /usr/sbin
@@ -47,32 +46,27 @@ PATH: /mnt/c/WINDOWS/System32/Wbem
 PATH: /mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/
 PATH: /mnt/c/WINDOWS/System32/OpenSSH/
 PATH: /mnt/c/Program Files/dotnet/
-PATH: /mnt/c/Program Files/Neovim/bin
-PATH: /mnt/c/Program Files/GitHub CLI/
-PATH: /mnt/c/Program Files/CMake/bin
-PATH: /mnt/c/Users/Kartikay/AppData/Roaming/nvm
-PATH: /mnt/c/Program Files/nodejs
 PATH: /mnt/c/Program Files/Git/cmd
-PATH: /mnt/c/Program Files/ojdkbuild/java-17-openjdk-17.0.3.0.6-1/bin
 PATH: /mnt/c/ProgramData/chocolatey/bin
-PATH: /mnt/c/Program Files (x86)/scala/bin
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Microsoft/WindowsApps
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Microsoft/WinGet/Links
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Microsoft/WinGet/Packages/mtkennerly.ludusavi_Microsoft.Winget.Source_8wekyb3d8bbwe
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Microsoft/WinGet/Packages/Rclone.Rclone_Microsoft.Winget.Source_8wekyb3d8bbwe
-PATH: /mnt/c/Program Files (x86)/sbt/bin
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Programs/nu/bin
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Programs/Python/Python312
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Programs/Python/Python312/Scripts
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Programs/Microsoft VS Code
 PATH: /mnt/c/Program Files/Cloudflare/Cloudflare WARP/
 PATH: /mnt/c/Users/Kartikay/Apps/NirSoft
-PATH: /mnt/c/Users/Kartikay/
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Programs/Microsoft VS Code/bin
-PATH: /snap/bin
+PATH: /mnt/c/Users/Kartikay/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe
+PATH: /home/kartikayd/.fzf/bin
 PATH: /opt/nvim-linux64/bin
-PATH: /home/kartikayd/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand
+PATH: /opt/gradle/gradle-8.12/bin
+PATH: /home/kartikayd/.local/bin/
 PATH: /opt/nvim-linux64/bin
+PATH: /opt/gradle/gradle-8.12/bin
+PATH: /home/kartikayd/.local/bin/
 
 
 ## ----------- ##
@@ -753,7 +747,7 @@ configure:4342: checking for sched.h
 configure:4342: result: yes
 configure:4355: checking for gethrtime
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/ccImU9QW.o: in function `main':
+/usr/bin/ld: /tmp/cczjZ78s.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `gethrtime'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1
@@ -826,7 +820,7 @@ configure: failed program was:
 configure:4355: result: no
 configure:4355: checking for read_real_time
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/cc2VoYY7.o: in function `main':
+/usr/bin/ld: /tmp/ccPQXEcO.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `read_real_time'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1
@@ -899,7 +893,7 @@ configure: failed program was:
 configure:4355: result: no
 configure:4355: checking for time_base_to_time
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/cckyTKP0.o: in function `main':
+/usr/bin/ld: /tmp/ccQtSLrG.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `time_base_to_time'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1
@@ -976,7 +970,7 @@ configure:4355: $? = 0
 configure:4355: result: yes
 configure:4355: checking for mach_absolute_time
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/ccrHh4Z0.o: in function `main':
+/usr/bin/ld: /tmp/ccI8NZnY.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `mach_absolute_time'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1

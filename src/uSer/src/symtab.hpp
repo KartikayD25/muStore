@@ -175,11 +175,11 @@ public:
       auto msg = msgPtr.second;
       Symbol *m = new Symbol(msg.name);
 
-      assert(getSymTab()->addSymbol(m));
+      getSymTab()->addSymbol(m);
       for (auto field : msg.fields) {
         Symbol sym = Symbol(field.id, field.name, field.isRepeated, m,
                             field.type, false);
-        assert(m->addMember(sym));
+        m->addMember(sym);
       }
     }
   }

@@ -1,16 +1,16 @@
 #pragma once
 #include "define.hpp"
-#include "types.hpp"
-#include <string>
-#include <iostream>
+#include "helper.hpp"
+#include "latency_tool.hpp"
 #include "message.hpp"
+#include "net/net.hpp"
+#include "symtab.hpp"
+#include "types.hpp"
 #include <cstring>
+#include <iostream>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include "symtab.hpp"
-#include "latency_tool.hpp"
-#include "helper.hpp"
-#include "net/net.hpp"
 
 #define SET_VAL(type)                                                          \
   inline void setVal(type val) { val_ = static_cast<gen_ptr_t>(val); }
@@ -55,7 +55,7 @@ namespace user {
 
 // class RepeatedSimpleFieldValue : public FieldValue {
 // public:
-//   friend class Person;  //---- Add all the classes as friend classes.  
+//   friend class Person;  //---- Add all the classes as friend classes.
 //   RepeatedSimpleFieldValue() = delete;
 //   RepeatedSimpleFieldValue(const Symbol &symbol) : symbol_(symbol) {}
 //   RepeatedSimpleFieldValue(RepeatedSimpleFieldValue &) = delete;
@@ -191,259 +191,259 @@ public:
 
   /* Set */
 public:
-    // Field: first_name (id: 1)
-    void set_field1(const std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  // Field: first_name (id: 1)
+  void set_field1(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field1() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field1() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field2(const  std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 2;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field2(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 2;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field2() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field2() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field3(const  std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 3;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field3(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 3;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field3() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field3() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field4(const  std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 4;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field4(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 4;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field4() {
+    constexpr uint32_t id = 4;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field4() {
-        constexpr uint32_t id = 4;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field5(const  std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 5;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field5(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 5;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field5() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field5() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field6(const std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 6;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field6(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 6;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field6() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field6() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field7(const std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 7;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field7(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 7;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field7() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field7() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field8(const std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 8;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field8(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 8;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field8() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field8() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field9(const std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 9;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field9(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 9;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field9() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field9() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field10(const std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 10;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field10(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 10;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field10() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field10() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
-    void set_field11(const std::string& val) {
-        static_assert(TypeHelper::IsComplexType<std::string>::value,
-                     "String must be complex type");
-        constexpr uint32_t id = 11;
-        constexpr uint32_t idx = id - 1;
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        field->setVal(val);
-        bitmap_ |= getMask(id);
+  void set_field11(const std::string &val) {
+    static_assert(TypeHelper::IsComplexType<std::string>::value,
+                  "String must be complex type");
+    constexpr uint32_t id = 11;
+    constexpr uint32_t idx = id - 1;
+
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    field->setVal(val);
+    bitmap_ |= getMask(id);
+  }
+
+  std::string get_field11() {
+    constexpr uint32_t id = 1;
+    constexpr uint32_t idx = id - 1;
+
+    if (!isPresent(id)) {
+      return nullptr;
     }
 
-    std::string get_field11() {
-        constexpr uint32_t id = 1;
-        constexpr uint32_t idx = id - 1;
-        
-        if (!isPresent(id)) {
-            return nullptr;
-        }
-        
-        auto* field = static_cast<SingleComplexFieldValue*>(values_[idx]);
-        return field->getValStr();
-    }  
+    auto *field = static_cast<SingleComplexFieldValue *>(values_[idx]);
+    return field->getValStr();
+  }
 
   /* Clear */
 
@@ -505,12 +505,11 @@ private:
     size_t offset = 0, buf_size = 0;
     {
       // Helper::Timer<Helper::nanosecond_t> _(alloc_time);
-      //buf_size = std::max(static_cast<size_t>(4 + getBufLen()),
+      // buf_size = std::max(static_cast<size_t>(4 + getBufLen()),
       //                    net::common::BUFFER_SIZE);
       buf_size = static_cast<size_t>(4 + getBufLen());
 #ifdef TEST_USER
-      buf_size = std::max(buf_size,
-                          net::common::BUFFER_SIZE);
+      buf_size = std::max(buf_size, net::common::BUFFER_SIZE);
 #endif
       buf_ = (char *)malloc(buf_size); // TODO: Use helper function, calloc
     }
@@ -596,7 +595,6 @@ private:
         }
       }
     }
-    std::cout << "Offset: " << offset << std::endl;
     {
       // Helper::Timer<Helper::nanosecond_t> _(write_time);
       bytes = conn->Write(buf_, buf_size);
@@ -620,19 +618,22 @@ private:
     uint32_t offset = 0;
     uint32_t iov_len = 0, iov_idx = 0;
     Helper::time_unit_t prep_time = 0, prep_time1 = 0, write_time = 0,
-                       total_time = 0;
+                        total_time = 0;
     {
       Helper::Timer<Helper::nanosecond_t> _(prep_time1);
-      iov_len = 1 + getIOVecLen(); // + 1 -- for garbage; isn't it already added below ?  
+      iov_len =
+          1 +
+          getIOVecLen(); // + 1 -- for garbage; isn't it already added below ?
 #ifdef TEST_USER
       iov_len += 1; // for garbage;
 #endif
     }
-    ///modifications to be made for memory safety: 
-    // i) Need to make a global vector containing atomic flags. 
-    // ii) Need to make changes to the root setVal method in order to check for flags being true/false. 
-    // iii) Use a lock_free_queue to add modifications of the setVal method. Pick the modifications from the queue and call the syscall. 
-    // iv)  
+    /// modifications to be made for memory safety:
+    // i) Need to make a global vector containing atomic flags.
+    // ii) Need to make changes to the root setVal method in order to check for
+    // flags being true/false. iii) Use a lock_free_queue to add modifications
+    // of the setVal method. Pick the modifications from the queue and call the
+    // syscall. iv)
     struct iovec iov[iov_len];
     {
       Helper::Timer<Helper::nanosecond_t> _(prep_time);
@@ -734,7 +735,8 @@ private:
     iov[iov_len - 1].iov_base = (void *)garbage_buf;
     iov[iov_len - 1].iov_len = net::common::BUFFER_SIZE - offset;
     offset += iov[iov_len - 1].iov_len;
-    std::cout << "OFFSET: " << offset << " BUFFF: " << net::common::BUFFER_SIZE << std::endl;
+    std::cout << "OFFSET: " << offset << " BUFFF: " << net::common::BUFFER_SIZE
+              << std::endl;
 #endif
     assert(offset == net::common::BUFFER_SIZE);
     {
@@ -744,11 +746,11 @@ private:
     prep_time += prep_time1;
     total_time = prep_time + write_time;
     LatencyRecorderMgr::Get()->AddMetric(
-       LatencyRecorderMgr::Metric(prep_time, write_time, total_time));
+        LatencyRecorderMgr::Metric(prep_time, write_time, total_time));
     return bytes;
   }
 
-  ssize_t serializeAndWriteZC(net::Conn *conn) { //implement zerocopy here 
+  ssize_t serializeAndWriteZC(net::Conn *conn) { // implement zerocopy here
 #ifdef TEST_USER
     char garbage_buf[net::common::BUFFER_SIZE] = {'\0'};
 #endif
@@ -757,10 +759,12 @@ private:
     uint32_t iov_len = 0, iov_idx = 0;
     struct msghdr msg = {0};
     Helper::time_unit_t prep_time = 0, prep_time1 = 0, write_time = 0,
-                       total_time = 0;
+                        total_time = 0;
     {
       Helper::Timer<Helper::nanosecond_t> _(prep_time1);
-      iov_len = 1 + getIOVecLen(); // + 1 -- for garbage; isn't it already added below ?  
+      iov_len =
+          1 +
+          getIOVecLen(); // + 1 -- for garbage; isn't it already added below ?
 #ifdef TEST_USER
       iov_len += 1; // for garbage;
 #endif
@@ -772,7 +776,7 @@ private:
       iov[iov_idx].iov_base = (void *)(&bitmap_);
       iov[iov_idx++].iov_len = sizeof(bitmap_);
       offset += sizeof(bitmap_);
-      //std::cout<<"Great";
+      // std::cout<<"Great";
       for (auto &field_val : values_) {
         const Symbol &sym = field_val->getSymbol();
         uint32_t id = sym.id_;
@@ -861,7 +865,7 @@ private:
           }
         }
       }
-      //only additions to SG method 
+      // only additions to SG method
       msg.msg_iov = iov;
       msg.msg_iovlen = iov_len;
     }
@@ -869,16 +873,16 @@ private:
     iov[iov_len - 1].iov_base = (void *)garbage_buf;
     iov[iov_len - 1].iov_len = net::common::BUFFER_SIZE - offset;
     offset += iov[iov_len - 1].iov_len;
-    std::cout << "OFFSET: " << offset << " BUFFF: " << net::common::BUFFER_SIZE << std::endl;
+    std::cout << "OFFSET: " << offset << " BUFFF: " << net::common::BUFFER_SIZE
+              << std::endl;
 #endif
-    // assert(offset == net::common::BUFFER_SIZE); //why is this here?? 
+    // assert(offset == net::common::BUFFER_SIZE); //why is this here??
     {
       Helper::Timer<Helper::nanosecond_t> _(write_time);
       bytes = conn->sendmsg_ZC(&msg);
-      //wait for notification-> socket has sent the data
-      
+      // wait for notification-> socket has sent the data
     }
-    
+
     return bytes;
   }
 
@@ -958,7 +962,9 @@ private:
   }
 
   void init() {
-    assert(symbol_ != nullptr);  
+    if (symbol_ == nullptr) {
+      throw std::runtime_error("symbol_ is nullptr");
+    }
     for (const auto &mem_sym : symbol_->members_) {
       FieldValue *val = nullptr;
       if (TypeHelper::isComplexType(mem_sym.type_)) {
@@ -978,7 +984,6 @@ private:
     }
   }
 
-  
   inline uint32_t getMask(const uint32_t id) {
     assert(id > 0 && id < 33);
     return 1 << (id - 1);
@@ -992,14 +997,12 @@ private:
   char *buf_{nullptr};
   const std::string message_name_{};
   const Symbol *symbol_{nullptr};
-  std::vector<FieldValue *> values_;  
+  std::vector<FieldValue *> values_;
   uint32_t bitmap_{0};
   uint32_t repeated_bitmap_{0}; // repeated elements that are being repeated
 };
 
 } // namespace user
-
-
 
 /*
 
