@@ -617,10 +617,7 @@ private:
     ssize_t bytes = 0;
     uint32_t offset = 0;
     uint32_t iov_len = 0, iov_idx = 0;
-    Helper::time_unit_t prep_time = 0, prep_time1 = 0, write_time = 0,
-                        total_time = 0;
     {
-      Helper::Timer<Helper::nanosecond_t> _(prep_time1);
       iov_len =
           1 +
           getIOVecLen(); // + 1 -- for garbage; isn't it already added below ?
@@ -636,7 +633,6 @@ private:
     // syscall. iv)
     struct iovec iov[iov_len];
     {
-      Helper::Timer<Helper::nanosecond_t> _(prep_time);
       // bitmap
       iov[iov_idx].iov_base = (void *)(&bitmap_);
       iov[iov_idx++].iov_len = sizeof(bitmap_);
@@ -740,13 +736,8 @@ private:
 #endif
     assert(offset == net::common::BUFFER_SIZE);
     {
-      Helper::Timer<Helper::nanosecond_t> _(write_time);
       bytes = conn->Writev(iov, iov_len);
     }
-    prep_time += prep_time1;
-    total_time = prep_time + write_time;
-    LatencyRecorderMgr::Get()->AddMetric(
-        LatencyRecorderMgr::Metric(prep_time, write_time, total_time));
     return bytes;
   }
 

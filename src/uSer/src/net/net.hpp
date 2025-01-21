@@ -110,12 +110,16 @@ struct Conn {
     return bytes;
   }
 
-  size_t Writev(const struct iovec iov[], const int iov_len) {
-    ssize_t bytes = writev(sock_, iov, iov_len);
+  size_t Writev(struct iovec *iov, const int iov_len) {
+    struct msghdr msg = {0};
+    msg.msg_iov = iov;
+    msg.msg_iovlen = iov_len;
+
+    ssize_t bytes = sendmsg(sock_, &msg, 0);
 
     switch (bytes) {
     case -1: {
-      common::HandleSyscallError("writev");
+      common::HandleSyscallError("sendmsg");
     }
     default: {
       break;
