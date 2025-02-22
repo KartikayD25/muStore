@@ -516,6 +516,7 @@ private:
     {
       // Helper::Timer<Helper::nanosecond_t> _(copy_time);
       // bitmap
+      std::cout << "Bitmap: " << bitmap_ << std::endl;
       memcpy(buf_ + offset, &bitmap_, 4);
       offset += 4;
 

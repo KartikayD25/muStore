@@ -166,7 +166,7 @@ target_include_directories(mustore_flatbuffers PUBLIC "${PAPI_INSTALL_DIR}/inclu
 # target_compile_definitions(mustore_one_copy PRIVATE DEBUGMODE)
 # target_compile_definitions(mustore_zero_copy PRIVATE DEBUGMODE)
 # target_compile_definitions(mustore_muser_tc PRIVATE DEBUGMODE)
-# target_compile_definitions(mustore_muser_oc PRIVATE DEBUGMODE)
+target_compile_definitions(mustore_muser_oc PRIVATE DEBUGMODE)
 # target_compile_definitions(mustore_muser_zc PRIVATE DEBUGMODE)
 # target_compile_definitions(mustore_protobuf PRIVATE DEBUGMODE)
 # target_compile_definitions(mustore_flatbuffers PRIVATE DEBUGMODE)

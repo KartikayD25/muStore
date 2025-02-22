@@ -8,6 +8,8 @@
 #include "muSer.hpp"
 #include <chrono>
 #include <cstring>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <sstream>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -121,5 +123,11 @@ int Protocol::createSocket(int port) {
   tv.tv_sec = 10; /* 30 Secs Timeout */
   setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tv,
              sizeof(struct timeval));
+  int flag = 1;
+  int result = setsockopt(sock,          /* socket affected */
+                          IPPROTO_TCP,   /* set option at TCP level */
+                          TCP_NODELAY,   /* name of option */
+                          (char *)&flag, /* the cast is historical cruft */
+                          sizeof(int));  /* length of option value */
   return sock;
 }

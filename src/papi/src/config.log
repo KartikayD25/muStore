@@ -58,6 +58,7 @@ PATH: /mnt/c/Users/Kartikay/AppData/Local/Programs/Python/Python312/Scripts
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Programs/Microsoft VS Code
 PATH: /mnt/c/Program Files/Cloudflare/Cloudflare WARP/
 PATH: /mnt/c/Users/Kartikay/Apps/NirSoft
+PATH: /mnt/c/Program Files/WezTerm
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Programs/Microsoft VS Code/bin
 PATH: /mnt/c/Users/Kartikay/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe
 PATH: /home/kartikayd/.fzf/bin
@@ -747,7 +748,7 @@ configure:4342: checking for sched.h
 configure:4342: result: yes
 configure:4355: checking for gethrtime
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/cczjZ78s.o: in function `main':
+/usr/bin/ld: /tmp/cciDebUN.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `gethrtime'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1
@@ -820,7 +821,7 @@ configure: failed program was:
 configure:4355: result: no
 configure:4355: checking for read_real_time
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/ccPQXEcO.o: in function `main':
+/usr/bin/ld: /tmp/ccQhrYBu.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `read_real_time'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1
@@ -893,7 +894,7 @@ configure: failed program was:
 configure:4355: result: no
 configure:4355: checking for time_base_to_time
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/ccQtSLrG.o: in function `main':
+/usr/bin/ld: /tmp/cci6vATs.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `time_base_to_time'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1
@@ -970,7 +971,7 @@ configure:4355: $? = 0
 configure:4355: result: yes
 configure:4355: checking for mach_absolute_time
 configure:4355: gcc -o conftest    conftest.c  >&5
-/usr/bin/ld: /tmp/ccI8NZnY.o: in function `main':
+/usr/bin/ld: /tmp/ccLXNgUW.o: in function `main':
 conftest.c:(.text+0xe): undefined reference to `mach_absolute_time'
 collect2: error: ld returned 1 exit status
 configure:4355: $? = 1

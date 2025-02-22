@@ -11,6 +11,7 @@
 #include <sys/socket.h> // For socket options
 #include <sys/uio.h>
 #include <thread>
+#include <unistd.h>
 namespace user {
 class Message;
 namespace net {
@@ -39,17 +40,21 @@ struct Conn {
     }
     completion_thread_ = std::thread(&Conn::processCompletions, this);
   }
-  Conn(int sock)
-      : proto_(ConnProto::TCP), is_active_(true), sock_(sock) {
-          // completion_thread_ = std::thread(&Conn::processCompletions, this);
-        };
+  Conn(int sock) : proto_(ConnProto::TCP), is_active_(true), sock_(sock) {
+#ifdef MU_SER_ZC
+    completion_thread_ = std::thread(&Conn::processCompletions, this);
+#endif
+  };
   ~Conn() {
-    // should_stop = true;
-    // if (completion_thread_.joinable()) {
-    //   completion_thread_.join();
-    // }
-    // cleanup();
-    // Close();
+#ifdef MU_SER_ZC
+    should_stop = true;
+    if (completion_thread_.joinable()) {
+      completion_thread_.join();
+    }
+    cleanup();
+    Close();
+
+#endif // MU_SER_ZC
   }
 
   void CloseWrite() {
@@ -93,9 +98,14 @@ struct Conn {
 
   size_t Write(std::string &buf) { return Write(buf.c_str(), buf.length()); }
   size_t Write(const char *buf, const size_t size) {
-    ssize_t bytes = send(sock_, buf, size, 0);
+
+    int bytes = 0;
+    bytes = send(sock_, buf, size, MSG_NOSIGNAL);
     switch (bytes) {
     case -1: {
+      int bytes = 0;
+      bytes = send(sock_, buf, size, MSG_NOSIGNAL);
+      std::cerr << "Wrote " << bytes << " bytes\n";
       common::HandleSyscallError("write");
     }
     case 0: {
@@ -107,6 +117,8 @@ struct Conn {
       break;
     }
     }
+    // usleep(200);
+    // sleep(1);
     return bytes;
   }
 
@@ -115,7 +127,7 @@ struct Conn {
     msg.msg_iov = iov;
     msg.msg_iovlen = iov_len;
 
-    ssize_t bytes = sendmsg(sock_, &msg, 0);
+    int bytes = sendmsg(sock_, &msg, 0);
 
     switch (bytes) {
     case -1: {
