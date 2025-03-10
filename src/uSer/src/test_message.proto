@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message TestMessage {
+  repeated string data0 = 1;
+  repeated string data1 = 2;
+  repeated string data2 = 3;
+  repeated string data3 = 4;
+  repeated string data4 = 5;
+  repeated string data5 = 6;
+  repeated string data6 = 7;
+  repeated string data7 = 8;
+  repeated string data8 = 9;
+  repeated string data9 = 10;
+}

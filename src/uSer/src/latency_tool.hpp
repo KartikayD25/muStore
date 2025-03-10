@@ -17,7 +17,11 @@ public:
     }
     return latencyRecorderMgr_;
   }
-  static LatencyRecorderMgr *Get() { return latencyRecorderMgr_; }
+  static LatencyRecorderMgr *Get() {
+    if (latencyRecorderMgr_ == nullptr)
+      latencyRecorderMgr_ = new LatencyRecorderMgr();
+    return latencyRecorderMgr_;
+  }
   void StartNewStats(int type, serialization_method_t method, size_t size,
                      size_t num_fields) {
     stats_.push_back(Stats(type, method, size, num_fields));
@@ -41,28 +45,25 @@ public:
   }
   void DumpAllMetricsToCSV(const std::string &file_name) {
     std::ofstream file(file_name);
-    
+
     // Write CSV header
-    file << "method,type,bytes,num_fields,prep_time,copy_time,alloc_time,dealloc_time,write_time,total_time" << std::endl;
+    file << "method,type,bytes,num_fields,prep_time,copy_time,alloc_time,"
+            "dealloc_time,write_time,total_time"
+         << std::endl;
 
     for (const auto &stat : stats_) {
-        for (const auto &metric : stat.metric_) {
-            // Write each metric to the CSV file
-            file << SerializationMethodToStr(stat.method_) << ","
-                 << stat.type_ << ","
-                 << stat.bytes_ << ","
-                 << stat.num_fields_ << ","
-                 << metric.prep_time_ << ","
-                 << metric.copy_time_ << ","
-                 << metric.alloc_time_ << ","
-                 << metric.dealloc_time_ << ","
-                 << metric.write_time_ << ","
-                 << metric.total_time_ << std::endl;
-        }
+      for (const auto &metric : stat.metric_) {
+        // Write each metric to the CSV file
+        file << SerializationMethodToStr(stat.method_) << "," << stat.type_
+             << "," << stat.bytes_ << "," << stat.num_fields_ << ","
+             << metric.prep_time_ << "," << metric.copy_time_ << ","
+             << metric.alloc_time_ << "," << metric.dealloc_time_ << ","
+             << metric.write_time_ << "," << metric.total_time_ << std::endl;
+      }
     }
-    
+
     file.close();
-}
+  }
   void DumpAggregatedStat() {
     for (auto &stat : stats_) {
       std::cout << "LATENCY(ns) " << stat.DumpAggregatedStatReadable()
@@ -161,7 +162,7 @@ private:
     std::string DumpAggregatedStatCSV() {
       Aggregate();
       std::stringstream ss;
-      std::cout<< SerializationMethodToStr(method_);
+
       ss << std::fixed << std::setprecision(3)
          << SerializationMethodToStr(method_) << "," << type_ << "," << bytes_
          << "," << num_fields_ << "," << avg_alloc_time_ << ","

@@ -66,14 +66,17 @@ void Server::handleClient(int clientSocket) {
         perror("recv");
         goto end;
       }
-      if (bytesRead == 0)
+      if (bytesRead == 0) {
+        std::cout << "bytesRead: " << bytesRead << std::endl;
         goto end;
+      }
       totalBytesRead += bytesRead;
     }
     if (totalBytesRead == sizeof(dataSize)) {
       std::memcpy(&dataSize, dbuffer, 8);
       dataSize = be64toh(dataSize);
     }
+    LOG_INFO("Data size: " + std::to_string(dataSize));
 
     totalBytesRead = 0;
     while (totalBytesRead < dataSize) {
@@ -85,13 +88,15 @@ void Server::handleClient(int clientSocket) {
         perror("recv");
         goto end;
       }
-      if (bytesRead == 0)
+      if (bytesRead == 0) {
+        std ::cout << "bytesRead: " << bytesRead << std::endl;
         goto end;
+      }
       data.append(buffer, bytesRead);
       totalBytesRead += bytesRead;
     }
 
-    // LOG_INFO("Received: " + data);
+    LOG_INFO("Received: " + data);
     processCommand(data, clientSocket);
     memset(buffer, 0, 1024);
   }

@@ -13,9 +13,13 @@ namespace user {
 typedef void const *gen_ptr_t;
 typedef std::pair<const char *, uint32_t> byte_t;
 
-enum class SerializationMethod { COPY, SG, ZC};
+enum class SerializationMethod { COPY, SG, ZC };
 
 std::string SerializationMethodToStr(SerializationMethod method) {
-  return method == SerializationMethod::COPY ? "COPY" : "SG";
+  if (method == user::SerializationMethod::COPY)
+    return "COPY";
+  if (method == user::SerializationMethod::SG)
+    return "SG";
+  return "ZC";
 }
 } // namespace user

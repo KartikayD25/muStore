@@ -171,15 +171,15 @@ public:
     std::unordered_map<std::string, ProtoMessage> allMsgs =
         parseProtoFile(filePath);
     for (auto msgPtr : allMsgs) {
-      printProtoMessage(msgPtr.second);
+      // printProtoMessage(msgPtr.second);
       auto msg = msgPtr.second;
       Symbol *m = new Symbol(msg.name);
 
-      getSymTab()->addSymbol(m);
+      assert(getSymTab()->addSymbol(m));
       for (auto field : msg.fields) {
         Symbol sym = Symbol(field.id, field.name, field.isRepeated, m,
                             field.type, false);
-        m->addMember(sym);
+        assert(m->addMember(sym));
       }
     }
   }

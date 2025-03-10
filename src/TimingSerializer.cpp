@@ -56,13 +56,13 @@ int TimingSerializer::serialize(const Response &msg) {
       }
       cpuCycles = 0;
     } else {
-      LOG_WARN("PAPI event PAPI_TOT_CYC not supported!");
+      // LOG_WARN("PAPI event PAPI_TOT_CYC not supported!");
     }
 
     if (PAPI_query_event(PAPI_L3_TCM) == PAPI_OK) {
       if (PAPI_add_event(eventSet, PAPI_L3_TCM) != PAPI_OK) {
         PAPI_perror("PAPI add event PAPI_L3_TCM error!");
-        LOG_ERROR("PAPI add event PAPI_L3_TCM error!");
+        // LOG_ERROR("PAPI add event PAPI_L3_TCM error!");
         return baseSerializer->serialize(msg);
       }
       cacheMisses = 0;
@@ -73,16 +73,16 @@ int TimingSerializer::serialize(const Response &msg) {
     if (PAPI_query_event(PAPI_BR_MSP) == PAPI_OK) {
       if (PAPI_add_event(eventSet, PAPI_BR_MSP) != PAPI_OK) {
         PAPI_perror("PAPI add event PAPI_BR_MSP error!");
-        LOG_ERROR("PAPI add event PAPI_BR_MSP error!");
+        // LOG_ERROR("PAPI add event PAPI_BR_MSP error!");
         return baseSerializer->serialize(msg);
       }
       branchMisses = 0;
     } else {
-      LOG_WARN("PAPI event PAPI_BR_MSP not supported!");
+      // LOG_WARN("PAPI event PAPI_BR_MSP not supported!");
     }
 
     if (PAPI_start(eventSet) != PAPI_OK) {
-      LOG_ERROR("PAPI start counters error!");
+      // LOG_ERROR("PAPI start counters error!");
       PAPI_cleanup_eventset(eventSet);
       PAPI_reset(eventSet);
       PAPI_destroy_eventset(&eventSet);

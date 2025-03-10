@@ -9,8 +9,8 @@
 
 // #include "deserialiser.hpp"
 
-#include "latency_tool.hpp"
 #include "helper.hpp"
+#include "latency_tool.hpp"
 #include "net/net.hpp"
 
 #define SET_VAL(type)                                                          \
@@ -110,8 +110,6 @@ public:
   }
 
   inline void setVal(std::string &val) { setVal(val.data(), val.length()); }
-  inline void setVal(const std::string &val) { setVal(val.data(), val.length()); }
-
   inline void setVal(const char *val) { setVal(val, strlen(val)); }
   inline void setVal(const char *val, size_t len) {
     val_ = val;
@@ -218,25 +216,24 @@ public:
     setVal(mem_name, (void *)&val);
   }
 
-/*
-  template<typename T>
-  void set_field(const T& val){
-    static_assert(TypeHelper::IsValidUserType<T>::value,
-                 "Invalid type for field");
-    
-    uint32_t id = symbol_->get_member_id(field);  
-    uint32_t idx = id - 1;
-    
-    static_assert(!TypeHelper::IsComplexType<T>::value,
-                 "Cannot use set_field with complex types");
-                 
-    static_assert(TypeHelper::isSameType<T>(symbol_->members_[idx].type_),
-                 "Type mismatch between field and value");
-  }
+  /*
+    template<typename T>
+    void set_field(const T& val){
+      static_assert(TypeHelper::IsValidUserType<T>::value,
+                   "Invalid type for field");
+
+      uint32_t id = symbol_->get_member_id(field);
+      uint32_t idx = id - 1;
+
+      static_assert(!TypeHelper::IsComplexType<T>::value,
+                   "Cannot use set_field with complex types");
+
+      static_assert(TypeHelper::isSameType<T>(symbol_->members_[idx].type_),
+                   "Type mismatch between field and value");
+    }
 
 
-*/
-
+  */
 
 private:
   // Simple, non-repeated
@@ -424,6 +421,7 @@ public:
     if (method == SerializationMethod::COPY) {
       bytes = serializeAndWriteCOPY(conn);
     } else if (method == SerializationMethod::SG) {
+      // std::cout << " Hello from SG " << std::endl;
       bytes = serializeAndWriteSG(conn);
     } else {
       bytes = serializeAndWriteZC(conn);
@@ -443,12 +441,11 @@ private:
     size_t offset = 0, buf_size = 0;
     {
       // Helper::Timer<Helper::nanosecond_t> _(alloc_time);
-      //buf_size = std::max(static_cast<size_t>(4 + getBufLen()),
+      // buf_size = std::max(static_cast<size_t>(4 + getBufLen()),
       //                    net::common::BUFFER_SIZE);
       buf_size = static_cast<size_t>(4 + getBufLen());
 #ifdef TEST_USER
-      buf_size = std::max(buf_size,
-                          net::common::BUFFER_SIZE);
+      buf_size = std::max(buf_size, net::common::BUFFER_SIZE);
 #endif
       buf_ = (char *)malloc(buf_size); // TODO: Use helper function, calloc
     }
@@ -534,7 +531,7 @@ private:
         }
       }
     }
-    std::cout << "Offset: " << offset << std::endl;
+    // std::cout << "Offset: " << offset << std::endl;
     {
       // Helper::Timer<Helper::nanosecond_t> _(write_time);
       bytes = conn->Write(buf_, buf_size);
@@ -557,11 +554,15 @@ private:
     ssize_t bytes = 0;
     uint32_t offset = 0;
     uint32_t iov_len = 0, iov_idx = 0;
+
+    struct msghdr msg = {0};
     Helper::time_unit_t prep_time = 0, prep_time1 = 0, write_time = 0,
-                       total_time = 0;
+                        total_time = 0;
     {
       Helper::Timer<Helper::nanosecond_t> _(prep_time1);
-      iov_len = 1 + getIOVecLen(); // + 1 -- for garbage; isn't it already added below ?  
+      iov_len =
+          1 +
+          getIOVecLen(); // + 1 -- for garbage; isn't it already added below ?
 #ifdef TEST_USER
       iov_len += 1; // for garbage;
 #endif
@@ -575,6 +576,8 @@ private:
       offset += sizeof(bitmap_);
 
       for (auto &field_val : values_) {
+        // std::cout << "current offset: " << offset
+        //          << " current index: " << iov_idx << std::endl;
         const Symbol &sym = field_val->getSymbol();
         uint32_t id = sym.id_;
         if (!isPresent(id)) {
@@ -667,21 +670,26 @@ private:
     iov[iov_len - 1].iov_base = (void *)garbage_buf;
     iov[iov_len - 1].iov_len = net::common::BUFFER_SIZE - offset;
     offset += iov[iov_len - 1].iov_len;
-    std::cout << "OFFSET: " << offset << " BUFFF: " << net::common::BUFFER_SIZE << std::endl;
+    std::cout << "OFFSET: " << offset << " BUFFF: " << net::common::BUFFER_SIZE
+              << std::endl;
 #endif
-    assert(offset == net::common::BUFFER_SIZE);
+    msg.msg_iov = iov;
+    msg.msg_iovlen = iov_len;
+    // assert(offset == net::common::BUFFER_SIZE);
     {
       Helper::Timer<Helper::nanosecond_t> _(write_time);
-      bytes = conn->Writev(iov, iov_len);
+      // bytes = conn->Writev(iov, iov_len);
+      bytes = conn->sendmsg_SG(&msg);
     }
     prep_time += prep_time1;
     total_time = prep_time + write_time;
-    LatencyRecorderMgr::Get()->AddMetric(
-       LatencyRecorderMgr::Metric(prep_time, write_time, total_time));
+    std::cout << prep_time << " " << total_time << std::endl;
+    //    LatencyRecorderMgr::Get()->AddMetric(
+    //        LatencyRecorderMgr::Metric(prep_time, write_time, total_time));
     return bytes;
   }
 
-  ssize_t serializeAndWriteZC(net::Conn *conn) { //implement zerocopy here 
+  ssize_t serializeAndWriteZC(net::Conn *conn) { // implement zerocopy here
 #ifdef TEST_USER
     char garbage_buf[net::common::BUFFER_SIZE] = {'\0'};
 #endif
@@ -690,10 +698,12 @@ private:
     uint32_t iov_len = 0, iov_idx = 0;
     struct msghdr msg = {0};
     Helper::time_unit_t prep_time = 0, prep_time1 = 0, write_time = 0,
-                       total_time = 0;
+                        total_time = 0;
     {
       Helper::Timer<Helper::nanosecond_t> _(prep_time1);
-      iov_len = 1 + getIOVecLen(); // + 1 -- for garbage; isn't it already added below ?  
+      iov_len =
+          1 +
+          getIOVecLen(); // + 1 -- for garbage; isn't it already added below ?
 #ifdef TEST_USER
       iov_len += 1; // for garbage;
 #endif
@@ -794,7 +804,7 @@ private:
           }
         }
       }
-      //only additions to SG method 
+      // only additions to SG method
       msg.msg_iov = iov;
       msg.msg_iovlen = iov_len;
     }
@@ -802,13 +812,83 @@ private:
     iov[iov_len - 1].iov_base = (void *)garbage_buf;
     iov[iov_len - 1].iov_len = net::common::BUFFER_SIZE - offset;
     offset += iov[iov_len - 1].iov_len;
-    std::cout << "OFFSET: " << offset << " BUFFF: " << net::common::BUFFER_SIZE << std::endl;
+    std::cout << "OFFSET: " << offset << " BUFFF: " << net::common::BUFFER_SIZE
+              << std::endl;
 #endif
-    assert(offset == net::common::BUFFER_SIZE); //why is this here?? 
+    // assert(offset == net::common::BUFFER_SIZE); //why is this here??
+
+    size_t total_size = 0;
+    for (uint32_t i = 0; i < msg.msg_iovlen; i++) {
+      total_size += msg.msg_iov[i].iov_len;
+    }
+    std::cout << total_size << std::endl;
+    if (total_size >= 60 * 1024 * 1024) {
+      const size_t CHUNK_SIZE = 20 * 1024 * 1024; // 40MB chunks
+      size_t num_chunks = (total_size + CHUNK_SIZE - 1) / CHUNK_SIZE;
+
+      ssize_t total_bytes = 0;
+      size_t bytes_sent = 0;
+
+      // Prepare buffers for each chunk
+      for (size_t chunk = 0; chunk < num_chunks; chunk++) {
+        // Create a subset of the iovecs for this chunk
+        struct msghdr chunk_msg = {0};
+        std::vector<struct iovec> chunk_iov;
+
+        size_t chunk_bytes = 0;
+        uint32_t iov_idx = 0;
+
+        // Skip already sent data
+        while (iov_idx < msg.msg_iovlen &&
+               bytes_sent >= msg.msg_iov[iov_idx].iov_len) {
+          bytes_sent -= msg.msg_iov[iov_idx].iov_len;
+          iov_idx++;
+        }
+
+        // Copy iovecs for this chunk
+        while (iov_idx < msg.msg_iovlen && chunk_bytes < CHUNK_SIZE) {
+          struct iovec vec;
+          vec.iov_base = (char *)msg.msg_iov[iov_idx].iov_base + bytes_sent;
+          vec.iov_len = std::min(msg.msg_iov[iov_idx].iov_len - bytes_sent,
+                                 CHUNK_SIZE - chunk_bytes);
+
+          chunk_iov.push_back(vec);
+          chunk_bytes += vec.iov_len;
+
+          if (vec.iov_len < (msg.msg_iov[iov_idx].iov_len - bytes_sent)) {
+            // Partial iovec used
+            bytes_sent += vec.iov_len;
+            break;
+          } else {
+            // Full iovec used
+            bytes_sent = 0;
+            iov_idx++;
+          }
+        }
+
+        // Set up msghdr for this chunk
+        chunk_msg.msg_iov = chunk_iov.data();
+        chunk_msg.msg_iovlen = chunk_iov.size();
+
+        // Send the chunk
+        ssize_t bytes = conn->sendmsg_ZC(&chunk_msg);
+        if (bytes < 0) {
+          return -1; // Error
+        }
+
+        total_bytes += bytes;
+      }
+
+      return total_bytes;
+    }
+
     {
       Helper::Timer<Helper::nanosecond_t> _(write_time);
       bytes = conn->sendmsg_ZC(&msg);
     }
+    prep_time += prep_time1;
+    total_time = prep_time + write_time;
+    std::cout << prep_time << " " << total_time << std::endl;
     return bytes;
   }
 
@@ -888,7 +968,7 @@ private:
   }
 
   void init() {
-    assert(symbol_ != nullptr);  
+    assert(symbol_ != nullptr);
     for (const auto &mem_sym : symbol_->members_) {
       FieldValue *val = nullptr;
       if (TypeHelper::isComplexType(mem_sym.type_)) {
@@ -908,7 +988,6 @@ private:
     }
   }
 
-  
   inline uint32_t getMask(const uint32_t id) {
     assert(id > 0 && id < 33);
     return 1 << (id - 1);
@@ -922,7 +1001,7 @@ private:
   char *buf_{nullptr};
   const std::string message_name_{};
   const Symbol *symbol_{nullptr};
-  std::vector<FieldValue *> values_;  
+  std::vector<FieldValue *> values_;
   uint32_t bitmap_{0};
   uint32_t repeated_bitmap_{0}; // repeated elements that are being repeated
 };
@@ -933,7 +1012,8 @@ public:
     return new Message(message_name);
   }
 
-  // static Deserialiser *getDeserialiserPtr(std::string message_name, char *buf,
+  // static Deserialiser *getDeserialiserPtr(std::string message_name, char
+  // *buf,
   //                                         size_t len) {
   //   return new Deserialiser(message_name, buf, len);
   // }
