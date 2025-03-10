@@ -2,3 +2,5 @@
 build/
 mustore.log
 .cache/
+*.o
+*.lo
